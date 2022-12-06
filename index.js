@@ -48,7 +48,6 @@ app.post('/pokemon/create', jsonParser, (req, res) => {
     } else {
       const type1 = result
       poke.insertOne({name: body.name,type: [result]})
-      res.json(result);
       if (body.type2 != null) {
         type.findOne({type: body.type2}).then(function (result1,err1) {
           if (err1) {
@@ -58,6 +57,8 @@ app.post('/pokemon/create', jsonParser, (req, res) => {
             res.json(result1);
           }
         });
+      } else{
+        res.json(result);
       }
     }
   });
@@ -107,6 +108,8 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
             res.json(result1);
           }
         });
+      } else {
+        res.json(result);
       }
       if (body.newname != null) {
         poke.updateOne({name: body.name}, {$set: {name: body.newname}}, options)
@@ -147,6 +150,7 @@ app.post('/pokedex/create', jsonParser, (req, res) => {
   
   poke.findOne({name: body.name}).then(function (result,err) {
     pokedex.insertOne(result)
+    res.json(result);
   });
 
   
