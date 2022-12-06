@@ -33,7 +33,7 @@ app.get("/pokemon/list", function (req, res) {
     });
 });
 
-app.post('/pokemon/insert', jsonParser, (req, res) => {
+app.post('/pokemon/create', jsonParser, (req, res) => {
   const body = req.body;
   console.log('Got body:', req.body);
 
@@ -49,7 +49,7 @@ app.post('/pokemon/insert', jsonParser, (req, res) => {
       const type1 = result
       poke.insertOne({name: body.name,type: [result]})
       res.json(result);
-      if (body.type2 !== null) {
+      if (body.type2 != null) {
         type.findOne({type: body.type2}).then(function (result1,err1) {
           if (err1) {
             res.status(400).send("Error fetching pokemons!");
@@ -98,16 +98,19 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
     } else {
       const type1 = result
       poke.updateOne({name: body.name}, {$set: {type: [result]}}, options)
-      type.findOne({type: body.type2}).then(function (result1,err1) {
-        if (err) {
-          res.status(400).send("Error fetching pokemons!");
-        } else {
-          if (body.type2 !== null) {
+      if (body.type2 != null) {
+        type.findOne({type: body.type2}).then(function (result1,err1) {
+          if (err) {
+            res.status(400).send("Error fetching pokemons!");
+          } else {
             poke.updateOne({name: body.name}, {$set: {type: [type1,result1]}}, options)
+            res.json(result1);
           }
-          res.json(result1);
-        }
-      });
+        });
+      }
+      if (body.newname != null) {
+        poke.updateOne({name: body.name}, {$set: {name: body.newname}}, options)
+      }
     }
   });
 }); 
@@ -124,6 +127,61 @@ app.delete('/pokemon/delete', jsonParser, (req, res) => {
   
   
   poke.deleteOne({name: body.name}).then(function (result,err) {
+    if (err) {
+      res.status(400).send("Error fetching pokemons!");
+    } else {
+      res.json(result);
+    }
+  });
+});
+
+app.post('/pokedex/create', jsonParser, (req, res) => {
+  const body = req.body;
+  console.log('Got body:', req.body);
+
+  const dbConnect = dbo.getDb();
+
+  const poke = dbConnect.collection("Pokemon")
+  const pokedex = dbConnect.collection("Pokedex")
+  const type = dbConnect.collection("Type")
+  
+  poke.findOne({name: body.name}).then(function (result,err) {
+    pokedex.insertOne(result)
+  });
+
+  
+}); 
+
+app.get('/pokedex/read', jsonParser, (req, res) => {
+  const body = req.body;
+  console.log('Got body:', body);
+
+  const dbConnect = dbo.getDb();
+
+  const poke = dbConnect.collection("Pokemon")
+  const pokedex = dbConnect.collection("Pokedex")
+  const type = dbConnect.collection("Type")
+  pokedex.findOne({name: body.name}).then(function (result,err) {
+    if (err) {
+      res.status(400).send("Error fetching pokemons!");
+    } else {
+      res.json(result);
+    }
+  });
+}); 
+
+app.delete('/pokedex/delete', jsonParser, (req, res) => {
+  const body = req.body;
+  console.log('Got body:', req.body);
+
+  const dbConnect = dbo.getDb();
+
+  const poke = dbConnect.collection("Pokemon")
+  const pokedex = dbConnect.collection("Pokedex")
+  const type = dbConnect.collection("Type")
+  
+  
+  pokedex.deleteOne({name: body.name}).then(function (result,err) {
     if (err) {
       res.status(400).send("Error fetching pokemons!");
     } else {
