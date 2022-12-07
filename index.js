@@ -33,6 +33,8 @@ app.get("/pokemon/list", function (req, res) {
     });
 });
 
+// Fonction de création de poukemoun
+
 app.post('/pokemon/create', jsonParser, (req, res) => {
   const body = req.body;
   console.log('Got body:', req.body);
@@ -42,17 +44,23 @@ app.post('/pokemon/create', jsonParser, (req, res) => {
   const poke = dbConnect.collection("Pokemon")
   const type = dbConnect.collection("Type")
   
+  //cherche le type 1 dans le bibliothèque des Type
+
   type.findOne({type: body.type1}).then(function (result,err) {
     if (err) {
       res.status(400).send("Error fetching pokemons!");
     } else {
       const type1 = result
+      //rajoute le type1
       poke.insertOne({name: body.name,type: [result]})
+      //vérifie si il y a un type2 a rajouter
       if (body.type2 != null) {
+        //cherche le type 2 dans le bibliothèque des Type
         type.findOne({type: body.type2}).then(function (result1,err1) {
           if (err1) {
             res.status(400).send("Error fetching pokemons!");
           } else {
+            //rajoute le type2
             poke.replaceOne({name: body.name}, {name: body.name,type : [type1, result1]})
             res.json(result1);
           }
