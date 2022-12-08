@@ -20,6 +20,7 @@ app.get("/", function (req, res) {
 app.listen(port, function () {
   console.log(`App listening on port ${port}!`);
 });
+
 app.get("/pokemon/list", function (req, res) {
   //on se connecte à la DB MongoDB
   const dbConnect = dbo.getDb();
@@ -150,7 +151,7 @@ app.delete('/pokemon/delete', jsonParser, (req, res) => {
   });
 });
 
-app.post('/pokedex/create', jsonParser, (req, res) => {
+app.post('/pokedex/insert', jsonParser, (req, res) => {
   const body = req.body;
   console.log('Got body:', req.body);
 
@@ -168,23 +169,24 @@ app.post('/pokedex/create', jsonParser, (req, res) => {
   
 }); 
 
-app.get('/pokedex/read', jsonParser, (req, res) => {
-  const body = req.body;
-  console.log('Got body:', body);
 
+
+app.get("/pokedex/list", function (req, res) {
+  //on se connecte à la DB MongoDB
   const dbConnect = dbo.getDb();
-
-  const poke = dbConnect.collection("Pokemon")
-  const pokedex = dbConnect.collection("Pokedex")
-  const type = dbConnect.collection("Type")
-  pokedex.findOne({name: body.name}).then(function (result,err) {
-    if (err) {
-      res.status(400).send("Error fetching pokemons!");
-    } else {
-      res.json(result);
-    }
-  });
-}); 
+  //premier test permettant de récupérer mes pokemons !
+  dbConnect
+    .collection("Pokedex")
+    .find({}) // permet de filtrer les résultats
+    /*.limit(50) // pourrait permettre de limiter le nombre de résultats */
+    .toArray(function (err, result) {
+      if (err) {
+        res.status(400).send("Error fetching pokemons!");
+      } else {
+        res.json(result);
+      }
+    });
+});
 
 app.delete('/pokedex/delete', jsonParser, (req, res) => {
   const body = req.body;
