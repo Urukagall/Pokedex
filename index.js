@@ -162,8 +162,12 @@ app.post('/pokedex/insert', jsonParser, (req, res) => {
   const type = dbConnect.collection("Type")
   
   poke.findOne({name: body.name}).then(function (result,err) {
-    pokedex.insertOne(result)
-    res.json(result);
+    pokedex.findOne({name: body.name}).then(function (result1,err1) {
+    if (result1 == null) {
+      pokedex.insertOne(result)
+      res.json(result);
+    }
+    });
   });
 
   
