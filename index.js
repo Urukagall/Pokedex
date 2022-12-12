@@ -107,7 +107,7 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
   const options = { upsert: true };
   
   type.findOne({type: body.type1}).then(function (result,err) {
-    if (err) {
+    if (result == null) {
       res.status(400).send("Error fetching pokemons!");
     } else {
       const type1 = result
@@ -126,6 +126,9 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
       }
       if (body.newname != null) {
         poke.updateOne({name: body.name}, {$set: {name: body.newname}}, options)
+      }
+      if (body.img != null) {
+        poke.updateOne({name: body.name}, {$set: {img: body.img}}, options)
       }
     }
   });
