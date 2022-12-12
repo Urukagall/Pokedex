@@ -103,35 +103,39 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
   const dbConnect = dbo.getDb();
 
   const poke = dbConnect.collection("Pokemon")
+  const pokedex = dbConnect.collection("Pokedex")
   const type = dbConnect.collection("Type")
   const options = { upsert: true };
-  
   type.findOne({type: body.type1}).then(function (result,err) {
     if (result == null) {
       res.status(400).send("Error fetching pokemons!");
     } else {
       const type1 = result
-      poke.updateOne({name: body.name}, {$set: {type: [result],img: body.img}}, options)
+      poke.updateOne({name: body.name}, {$set: {type: [result]}})
+      pokedex.updateOne({name: body.name}, {$set: {type: [result]}})
       if (body.type2 != null) {
         type.findOne({type: body.type2}).then(function (result1,err1) {
           if (err) {
             res.status(400).send("Error fetching pokemons!");
           } else {
-            poke.updateOne({name: body.name}, {$set: {type: [type1,result1]}}, options)
+            poke.updateOne({name: body.name}, {$set: {type: [type1,result1]}})
+            pokedex.updateOne({name: body.name}, {$set: {type: [type1,result1]}})
             res.json(body);
           }
         });
       } else {
         res.json(body);
       }
-      if (body.newname != null) {
-        poke.updateOne({name: body.name}, {$set: {name: body.newname}}, options)
-      }
-      if (body.img != null) {
-        poke.updateOne({name: body.name}, {$set: {img: body.img}}, options)
-      }
     }
   });
+  if (body.img != null) {
+    poke.updateOne({name: body.name}, {$set: {img: body.img}})
+    pokedex.updateOne({name: body.name}, {$set: {img: body.img}})
+  }
+  if (body.newname != null) {
+    poke.updateOne({name: body.name}, {$set: {name: body.newname}})
+    pokedex.updateOne({name: body.name}, {$set: {name: body.newname}})
+  }
 }); 
 
 
