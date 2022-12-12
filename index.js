@@ -146,6 +146,7 @@ app.delete('/pokemon/delete', jsonParser, (req, res) => {
   const dbConnect = dbo.getDb();
 
   const poke = dbConnect.collection("Pokemon")
+  const pokedex = dbConnect.collection("Pokedex")
   const type = dbConnect.collection("Type")
   
   
@@ -154,6 +155,11 @@ app.delete('/pokemon/delete', jsonParser, (req, res) => {
       res.status(400).send("Error fetching pokemons!");
     } else {
       res.json(result);
+      pokedex.deleteOne({name: body.name}).then(function (result1,err1) {
+        if (err) {
+          res.status(400).send("Error fetching pokemons!");
+        }
+      });
     }
   });
 });
