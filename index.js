@@ -57,7 +57,7 @@ app.post('/pokemon/create', jsonParser, (req, res) => {
     } else {
       const type1 = result
       //rajoute le type1
-      poke.insertOne({name: body.name,type: [result]})
+      poke.insertOne({name: body.name,img: body.img,type: [result]})
       //vérifie si il y a un type2 a rajouter
       if (body.type2 != null) {
         //cherche le type 2 dans le bibliothèque des Type
@@ -66,12 +66,12 @@ app.post('/pokemon/create', jsonParser, (req, res) => {
             res.status(400).send("Error fetching pokemons!");
           } else {
             //rajoute le type2
-            poke.replaceOne({name: body.name}, {name: body.name,type : [type1, result1]})
-            res.json(result1);
+            poke.replaceOne({name: body.name}, {name: body.name,img: body.img,type : [type1, result1]})
+            res.json(body);
           }
         });
       } else{
-        res.json(result);
+        res.json(body);
       }
     }
   });
@@ -111,18 +111,18 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
       res.status(400).send("Error fetching pokemons!");
     } else {
       const type1 = result
-      poke.updateOne({name: body.name}, {$set: {type: [result]}}, options)
+      poke.updateOne({name: body.name}, {$set: {type: [result],img: body.img}}, options)
       if (body.type2 != null) {
         type.findOne({type: body.type2}).then(function (result1,err1) {
           if (err) {
             res.status(400).send("Error fetching pokemons!");
           } else {
             poke.updateOne({name: body.name}, {$set: {type: [type1,result1]}}, options)
-            res.json(result1);
+            res.json(body);
           }
         });
       } else {
-        res.json(result);
+        res.json(body);
       }
       if (body.newname != null) {
         poke.updateOne({name: body.name}, {$set: {name: body.newname}}, options)
