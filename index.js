@@ -79,22 +79,22 @@ app.post('/pokemon/create', jsonParser, (req, res) => {
 }); 
 
 
-app.get('/pokemon/read', jsonParser, (req, res) => {
-  const body = req.body;
-  console.log('Got body:', body);
+// app.get('/pokemon/read', jsonParser, (req, res) => {
+//   const body = req.body;
+//   console.log('Got body:', body);
 
-  const dbConnect = dbo.getDb();
+//   const dbConnect = dbo.getDb();
 
-  const poke = dbConnect.collection("Pokemon")
-  const type = dbConnect.collection("Type")
-  poke.findOne({name: body.name}).then(function (result,err) {
-    if (err) {
-      res.status(400).send("Error fetching pokemons!");
-    } else {
-      res.json(result);
-    }
-  });
-}); 
+//   const poke = dbConnect.collection("Pokemon")
+//   const type = dbConnect.collection("Type")
+//   poke.findOne({name: body.name}).then(function (result,err) {
+//     if (err) {
+//       res.status(400).send("Error fetching pokemons!");
+//     } else {
+//       res.json(result);
+//     }
+//   });
+// }); 
 
 app.post('/pokemon/update', jsonParser, (req, res) => {
   const body = req.body;
